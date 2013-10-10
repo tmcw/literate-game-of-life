@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Game of Life</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1>Game of Life</h1>
+<p><a href="https://en.wikipedia.org/wiki/Conway&#39;s_Game_of_Life">Conway&#39;s Game of Life</a>
+is a very simple cellular automaton, which is fancy speak for &quot;it&#39;s a simple
+system of rules that treats individual dots kind of like creatures.&quot; The
+creatures are usually called &#39;cells&#39; and are represented as pixels, so
+we&#39;ll call them &#39;cells&#39; here, and in this case, one cell is the same as
+one pixel.</p>
+<p>First, some housekeeping: the size of the game. Divide the &#39;real&#39; size
+by 2 and then size it up in CSS. Blurrier but faster as a result, since
+there are fewer pixels to think about.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="keyword">var</span> width = <span class="number">960</span> / <span class="number">2</span>,
+    height = <span class="number">500</span> / <span class="number">2</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>the colors of living and dead cells: this is in RGBA
+space, so (255, 255, 255, 255) is white and (0, 0, 0, 255) is
+black. We only set the <code>red</code> channel of the cells in this case,
+so living cells are cyan <code>(0, 255, 255, 255)</code> and dead cells are white
+<code>(255, 255, 255, 255)</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    alive = <span class="number">0</span>,
+    dead = <span class="number">255</span>,
+    canvas = document.getElementById(<span class="string">'c'</span>);
+
+canvas.width = width;
+canvas.height = height;
+
+<span class="keyword">var</span> ctx = canvas.getContext(<span class="string">'2d'</span>);
+
+seed();
+tick();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>First, seed the world with random data given to us by <code>Math.random()</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">function</span> <span class="title">seed</span><span class="params">()</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><code>.createImageData</code> asks a drawing context for a new, blank pixel
+array. Pixel arrays are simple - they&#39;re just really long arrays
+of pixel values, like <code>[r, g, b, a, r, g, b, a... ]</code>, so indexing into
+them isn&#39;t too tricky.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> after = ctx.createImageData(width, height);
+    <span class="keyword">for</span> (<span class="keyword">var</span> x = <span class="number">0</span>; x &lt; width; x++) {
+        <span class="keyword">for</span> (<span class="keyword">var</span> y = <span class="number">0</span>; y &lt; height; y++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>for each pixel, color it either alive or dead randomly.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            write(after, x, y, (Math.random() &gt; <span class="number">0.5</span>) ? alive : dead);
+        }
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>and then &#39;put&#39; all of those random values into the picture, all at once.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ctx.putImageData(after, <span class="number">0</span>, <span class="number">0</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>The <code>tick</code>: this is the core of the game - some might also call it a &#39;step&#39;.
+In each tick, we decide whether each cell should live or die, and at the
+end of the tick we put that new status, living or dead, into the world.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">function</span> <span class="title">tick</span><span class="params">()</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>get both the state now and a new blank canvas to draw the results
+of our decisions into.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> before = ctx.getImageData(<span class="number">0</span>, <span class="number">0</span>, width, height),
+        after = ctx.createImageData(width, height);
+
+    <span class="keyword">for</span> (<span class="keyword">var</span> x = <span class="number">0</span>; x &lt; width; x++) {
+        <span class="keyword">for</span> (<span class="keyword">var</span> y = <span class="number">0</span>; y &lt; height; y++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>get our decision for whether this <code>x, y</code> position on the canvas
+should live or die.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">var</span> state = shouldLive(before, x, y);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>write that decision into the image.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            write(after, x, y, state ? alive : dead);
+        }
+    }
+
+    ctx.putImageData(after, <span class="number">0</span>, <span class="number">0</span>);
+    window.setTimeout(tick, <span class="number">100</span>);
+}
+
+<span class="function"><span class="keyword">function</span> <span class="title">shouldLive</span><span class="params">(before, x, y)</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>get whether this cell is still alive.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> self = cell(before, x, y),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>get the number of neighbors still alive</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        neighbors = neighborsLiving(before, x, y);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <ol>
+<li>Any live cell with fewer than two live neighbours dies, as if caused by under-population.</li>
+<li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+<li>Any live cell with more than three live neighbours dies, as if by overcrowding.</li>
+<li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
+</ol>
+<p>We can simplify these rules by only testing for the ones that are true, since
+if they aren&#39;t true, then  the answer is false.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">return</span> (self &amp;&amp; (neighbors === <span class="number">2</span> || neighbors === <span class="number">3</span>) ||
+        (!self &amp;&amp; neighbors === <span class="number">3</span>));
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Is a cell at <code>x, y</code> still alive? This answers with a 1 or a 0. It would
+be technically more accurate to say <code>true</code> or <code>false</code>, but it&#39;s convenient
+to use 1 and 0 because...</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">function</span> <span class="title">cell</span><span class="params">(before, x, y)</span> {</span>
+    <span class="keyword">return</span> (before.data[(x * <span class="number">4</span>) + (y * width * <span class="number">4</span>)] === alive) ? <span class="number">1</span> : <span class="number">0</span>;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>For our computation of living neighbors, we simply add together the values
+of calling <code>cell</code> on every neighbor in each of the 8 directions.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">function</span> <span class="title">neighborsLiving</span><span class="params">(before, x, y)</span> {</span>
+    <span class="keyword">return</span> cell(before, x - <span class="number">1</span>, y) +
+        cell(before, x + <span class="number">1</span>, y) +
+        cell(before, x + <span class="number">0</span>, y + <span class="number">1</span>) +
+        cell(before, x + <span class="number">0</span>, y - <span class="number">1</span>) +
+        cell(before, x + <span class="number">1</span>, y + <span class="number">1</span>) +
+        cell(before, x + <span class="number">1</span>, y - <span class="number">1</span>) +
+        cell(before, x - <span class="number">1</span>, y + <span class="number">1</span>) +
+        cell(before, x - <span class="number">1</span>, y - <span class="number">1</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Finally, our really simple method to write the result of our decision
+for each cell. This doesn&#39;t need to return a value, since Javascript
+doesn&#39;t make a copy of the <code>after</code> array that we give as an argument -
+changes that we make to it are reflected everywhere.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">function</span> <span class="title">write</span><span class="params">(after, x, y, val)</span> {</span>
+    <span class="keyword">var</span> index = (x * <span class="number">4</span>) + (y * width * <span class="number">4</span>);
+    after.data[index + <span class="number">0</span>] = val;
+    after.data[index + <span class="number">1</span>] = <span class="number">255</span>;
+    after.data[index + <span class="number">2</span>] = <span class="number">255</span>;
+    after.data[index + <span class="number">3</span>] = <span class="number">255</span>;
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
